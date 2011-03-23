@@ -1,0 +1,214 @@
+#+TITLE:     Introduction to Machine Learning
+#+AUTHOR:    Dave Kincaid
+#+EMAIL:     kincaid.dave@gmail.com
+#+DATE:      3/21/2011
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:
+#+LINK_HOME:
+#+XSLT:
+#+STARTUP: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_FRAME_LEVEL: 2
+#+BEAMER_HEADER_EXTRA: \usetheme{Boadilla}\usecolortheme{beaver}\usepackage{palatino}
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 :ETC
+* Introduction to Machine Learning
+  :PROPERTIES:
+  :END:
+** Types of machine learning
+   :PROPERTIES:
+   :BEAMER_envargs: [<+->]
+   :END:
+*** Supervised learning                                        :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :END:
+    Learning using examples which have both features and the desired target.
+*** Unsupervised learning                                           :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    Learning using only features. Don't know (or don't provide) the targets
+*** Reinforcement learning                                          :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    Computer is only given feedback as to whether the answer is right or wrong.
+*** Evolutionary learning                                           :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    Learning where a solution is evolved from some starting population based
+    on a fitness function.
+** Problem types
+   :PROPERTIES:
+   :BEAMER_envargs: [t]
+   :END:
+*** Regression                                                      :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <1->
+    :END:
+**** The target is a continuous number
+*** Classification                                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+**** Target is a discrete set of classes
+** Short List of Algorithms
+*** Supervised learning algorithms                            :BMCOL:B_block:
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** \textbf{Naive Bayes}
+**** \textbf{Support Vector Machines (SVM)}
+**** \textbf{k-Nearest Neighbors}
+**** Decision trees (C4.5)
+**** Random forests
+**** Logistic regression
+**** Stochastic Gradient Descent
+**** Artificial Neural networks
+*** Unsupervised learning algorithms                          :BMCOL:B_block:
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** k-means clustering
+**** Artificial neural networks
+**** Self-organizing maps
+**** Hierarchical clustering
+**** Mean shift clustering
+**** Affinity propagation
+** Languages and libraries
+*** Java                                                      :BMCOL:B_block:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** Apache Mahout
+**** Weka
+*** Python                                                    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** Scikit-learn
+**** PyBrain
+**** Natural Language Toolkit (NLTK)
+**** PyML
+*** C#                                                        :BMCOL:B_block:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** IKVM & Weka
+**** AForge.NET & Accord.NET
+*** Others                                                          :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: C[t]
+    :END:
+**** R stats package w/various add-ons
+**** libsvm, libFANN (C/C++)
+**** Incanter (Clojure)
+** Workflow
+    :PROPERTIES:
+    :BEAMER_envargs: [<+->]
+    :END:
+*** Training the model
+#+begin_ditaa training.png -r -S
+    /----------\        /-----------\       /-----------\
+    | Training |        | Algorithm |       | Model     |
+    | Examples |------->| cPNK      |------>| cGRE      |
+    | cBLU     |        |           |       |           |
+    \----------/        \-----------/       \-----------/
+#+end_ditaa
+*** Testing the model
+#+begin_ditaa testing.png -r -S
+    /----------\        /-----------\       /-------------\
+    | Test     |        | Model     |       | Predictions |
+    | Examples |------->| cGRE      |------>| cYEL        |
+    | cBLU     |        |           |       |             |
+    \----------/        \-----------/       \-------------/
+#+end_ditaa
+*** Using the model
+
+#+begin_ditaa using.png -r -S
+    /----------\        /-----------\       /-------------\
+    | New Data |        | Model     |       | Predictions |
+    |          |------->| cGRE      |------>| cYEL        |
+    | cBLU     |        |           |       |             |
+    \----------/        \-----------/       \-------------/
+#+end_ditaa
+* Live examples
+** Species classifier
+*** Species Classifier Example                                    :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :BEAMER_envargs: <1->
+    :END:
+**** Features: Name, class, sex, age, weight, color, state
+**** Target: Species
+*** Algorithms                                                      :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+**** Naive Bayes
+**** k-Nearest Neighbors
+**** Support Vector Machine
+*** Code used                                                  :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :BEAMER_envargs: <3->
+    :END:
+**** Python with the Scikit-Learn library
+** Species Classifier: Load the data
+#+BEGIN_src python
+import csv
+
+inputfile = open("species.csv")
+
+for i in range(5):
+    print i
+
+#+END_src
+
+** Algorithms: Naive Bayes
+High level description of the Naive Bayes algorithm
+** Species Classifier: Naive Bayes: Train the model
+** Species Classifier: Naive Bayes: Test the model
+** Species Classifier: Naive Bayes: Measure the accuracy
+** Algorithms: k-Nearest Neighbors
+High level description of the k-Nearest Neighbors algorithm
+** Species Classifier: kNN: Train the model
+** Species Classifier: KNN: Test the model
+** Species Classifier: kNN: Measure the accuracy
+** Algorithms: Support Vector Machine
+High level description of the Support Vector Machine algorithm
+** Species Classifier: SVM: Train the model
+** Species Classifier: SVM: Test the model
+** Species Classifier: SVM: Measure the accuracy
+** Testing sandbox
+#+begin_ditaa blue.png -r -S
++---------+
+| cBLU    |
+|    +----+
+|    |cPNK|
++----+----+
+#+end_ditaa
+
