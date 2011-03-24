@@ -1,0 +1,5 @@
+patientid,name,sex,species,age,weight,units
+'100','IVY','Spayed Female','Canine',5030,53.8,'pounds'
+'10001','SIPPI','Spayed Female','Canine',1024,31.6,'pounds'
+'10003','GRETA','Spayed Female','Canine',5753,11.3,'pounds'
+'10004','ANNABEL (ANNIE)','Spayed Female','Canine',1580,10.3,'pounds'
