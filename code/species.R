@@ -1,4 +1,4 @@
-species.full = read.table("species.csv",header=T,sep=",")
+species.full = read.table("../data/species.csv",header=T,sep=",")
 species.full = species.full[species.features$species=="Canine" | species.features$species=="Feline",]
 species.full = species.full[species.full$age < 20000,]
 species.full = species.full[species.full$age > 0,]
