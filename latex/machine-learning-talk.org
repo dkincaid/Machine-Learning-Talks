@@ -1,28 +1,24 @@
 #+TITLE:     Introduction to Machine Learning
 #+AUTHOR:    Dave Kincaid
 #+EMAIL:     kincaid.dave@gmail.com
-#+DATE:      3/21/2011
-#+DESCRIPTION:
-#+KEYWORDS:
+#+DATE:      4/1/2011
+#+DESCRIPTION: A short introduction to machine learning with an application using R.
+#+KEYWORDS: ai, machinelearning, R, Rstats
 #+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc email:t
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
-#+LINK_UP:
-#+LINK_HOME:
-#+XSLT:
 #+STARTUP: beamer
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [presentation]
 #+BEAMER_FRAME_LEVEL: 2
-#+BEAMER_HEADER_EXTRA: \usetheme{Boadilla}\usecolortheme{beaver}\usepackage{palatino}
+#+BEAMER_HEADER_EXTRA: \usetheme{Boadilla}\usecolortheme{beaver}\usepackage{palatino}\institute{IDEXX Laboratories, Inc.}
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 :ETC
+
 * Introduction to Machine Learning
-  :PROPERTIES:
-  :END:
 ** Types of machine learning
    :PROPERTIES:
    :BEAMER_envargs: [<+->]
@@ -71,9 +67,9 @@
     :BEAMER_env: block
     :BEAMER_envargs: C[t]
     :END:
-**** \textbf{Naive Bayes}
-**** \textbf{Support Vector Machines (SVM)}
-**** \textbf{k-Nearest Neighbors}
+**** \alert{Naive Bayes}
+**** \alert{Support Vector Machines (SVM)}
+**** \alert{k-Nearest Neighbors}
 **** Decision trees (C4.5)
 **** Random forests
 **** Logistic regression
@@ -122,7 +118,7 @@
     :BEAMER_env: block
     :BEAMER_envargs: C[t]
     :END:
-**** R stats package w/various add-ons
+**** \alert{R stats package w/various add-ons}
 **** libsvm, libFANN (C/C++)
 **** Incanter (Clojure)
 ** Workflow
@@ -154,14 +150,14 @@
     | cBLU     |        |           |       |             |
     \----------/        \-----------/       \-------------/
 #+end_ditaa
-* Live examples
+* Species Classifier Example
 ** Species classifier
 *** Species Classifier Example                                    :B_example:
     :PROPERTIES:
     :BEAMER_env: example
     :BEAMER_envargs: <1->
     :END:
-**** Features: Name, class, sex, age, weight, color, state
+**** Features: age, weight, # of visits, # of siblings
 **** Target: Species
 *** Algorithms                                                      :B_block:
     :PROPERTIES:
@@ -176,39 +172,118 @@
     :BEAMER_env: alertblock
     :BEAMER_envargs: <3->
     :END:
-**** Python with the Scikit-Learn library
+**** R with caret package (and others in a supporting role)
 ** Species Classifier: Load the data
-#+BEGIN_src python
-import csv
-
-inputfile = open("species.csv")
-
-for i in range(5):
-    print i
-
+#+BEGIN_src R
+species.full = read.table("../data/species.csv",
+                          header=T, sep=",")
+species.full = species.full[
+                species.features$species=="Canine" |
+                species.features$species=="Feline",]
+species.full = species.full[species.full$age < 20000,]
+species.full = species.full[species.full$age > 0,]
+species.full = species.full[
+                species.full$units =="pounds",]
+species.full = species.full[
+                species.full$weight < 1000,]
 #+END_src
+** Species Classifier: Reformat and split the data
+#+BEGIN_src R
+species.features = subset(species.full,
+                        select=c("age","weight"))
+species.targets = subset(species.full, select="species")
+species.targets = species.targets$species[drop=TRUE]
 
+library(caret)
+set1index = createDataPartition(species.targets,
+                        p=.2, list=FALSE, times=1)
+species.targets.test = species.targets[set1index]
+species.features.test = species.features[set1index,]
+species.targets.train = species.targets[-set1index]
+species.features.train = species.features[-set1index]
+#+END_src
 ** Algorithms: Naive Bayes
 High level description of the Naive Bayes algorithm
-** Species Classifier: Naive Bayes: Train the model
-** Species Classifier: Naive Bayes: Test the model
-** Species Classifier: Naive Bayes: Measure the accuracy
+** Species Classifier: Naive Bayes: Train, Test, Measure
+*** Train the model                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <1->
+    :END:
+#+BEGIN_src R
+nbmodel = train(species.features.train,
+                species.targets.train,"nb")
+#+END_src
+*** Test the model                                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+#+BEGIN_src R
+speciesPredictions = extractPrediction(list(nbmodel),
+              testX=species.features.test,
+              testY=species.targets.test)
+speciesPredictions = speciesPredictions[
+            speciesPredictions$dataType == "Test",]
+#+END_src
+*** Measure the accuracy                                            :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <3->
+    :END:
+#+BEGIN_src R
+confusionMatrix(speciesPredictions$pred,
+                speciesPredictions$obs)
+#+END_src
+** Species Classifier: Naive Bayes: Results
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+#+BEGIN_src text
+    Confusion Matrix and Statistics
+ 
+                 Reference
+     Prediction Canine Feline
+        Canine   6570   1087
+        Feline   1113   1606
+                                         
+            Accuracy : 0.788         
+              95% CI : (0.78, 0.7958)
+    Information Rate : 0.7405        
+ P-Value [Acc > NIR] : <2e-16        
+                                        
+         Sensitivity : 0.8551        
+         Specificity : 0.5964        
+#+END_src
+\end{minipage}
+\end{center}
 ** Algorithms: k-Nearest Neighbors
 High level description of the k-Nearest Neighbors algorithm
 ** Species Classifier: kNN: Train the model
-** Species Classifier: KNN: Test the model
+** Species Classifier: kNN: Test the model
 ** Species Classifier: kNN: Measure the accuracy
 ** Algorithms: Support Vector Machine
 High level description of the Support Vector Machine algorithm
 ** Species Classifier: SVM: Train the model
 ** Species Classifier: SVM: Test the model
 ** Species Classifier: SVM: Measure the accuracy
-** Testing sandbox
-#+begin_ditaa blue.png -r -S
-+---------+
-| cBLU    |
-|    +----+
-|    |cPNK|
-+----+----+
-#+end_ditaa
+** Summary Comparison of the Models
+* References
+** Links
+*** Code and slides for this talk: http://bit.ly/f8ce6f
+*** My machine learning bookmarks: http://bit.ly/ebRPT1
+*** R stats package: http://www.r-project.org
+*** RStudio GUI: http://www.rstudio.org
+*** Machine Learning competitions: http://www.kaggle.com
+*** Iain Murray's "Introduction to Machine Learning Videos": http://bit.ly/fSg4rG
+*** Andrew Ng's Stanford Machine Learning course: http://bit.ly/fvafuI 
+** Recommended reading
+*** "Machine Learning. An Algorithmic Perspective", Stephan Marsland
+*** "Programming Collective Intellience", Toby Segaran
+*** "Data Analysis with Open Source Tools", Philipp Janert
+*** "Elements of Statistical Learning", Hastie, et. al. (http://bit.ly/eq74Ct)
+*** "Machine Learning", Tom Mitchell
+*** "Pattern Matching and Machine Learning", Chris Bishop
+
+
+
 
