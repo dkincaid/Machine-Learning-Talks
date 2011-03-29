@@ -6,7 +6,16 @@ species.full = species.full[species.full$age > 0,]
 species.full = species.full[species.full$units =="pounds",]
 species.full = species.full[species.full$weight < 1000,]
 species.full = na.omit(species.full)
-species.features = subset(species.full,select=c("age","weight","visits","totsibs","actsibs"))
+species.features = subset(species.full,select=c("sex","age","weight","visits","totsibs","actsibs"))
+species.features$name = species.features$name[drop=T]
+
+#namefreq = as.data.frame(with(species.features, table(name)))
+#excludename = namefreq[namefreq$Freq < 25,"name"]
+#modelmatrix = model.matrix(~ name - 1, data=species.features, excludes=excludename)
+modelmatrix = model.matrix(~ sex - 1, data=species.features)
+subset(species.features,select=c("age","weight","visits","totsibs","actsibs"))
+species.features = cbind(species.features, modelmatrix)
+
 species.targets = subset(species.full, select="species")
 species.targets = species.targets$species[drop=TRUE]
 
@@ -15,7 +24,6 @@ species.targets.test = species.targets[set1index]
 species.features.test = species.features[set1index,]
 species.targets.train = species.targets[-set1index]
 species.features.train = species.features[-set1index,]
-
 
 knnmodel = train(species.features.train,species.targets.train,"knn")
 
