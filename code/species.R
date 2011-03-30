@@ -43,3 +43,9 @@ svmmodel = train(species.features.train,species.targets.train,"svmLinear")
 speciesPredictions = extractPrediction(list(svmmodel),testX=species.features.test,testY=species.targets.test)
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
+
+treebagmodel = train(species.features.train,species.targets.train,"treebag")
+
+speciesPredictions = extractPrediction(list(treebagmodel),testX=species.features.test,testY=species.targets.test)
+speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
+confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
