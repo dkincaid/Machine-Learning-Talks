@@ -1,0 +1,11 @@
+"patientid","name","sex","species","age","weight","units","visits","totsibs","actsibs"
+"317","DAISY","Spayed Female","Canine",5497,44,"pounds",0,1,1
+"1532","BUDDY","Spayed Female","Feline",5215,8.2,"pounds",0,1,1
+"10682","SOPHIE","Spayed Female","Feline",1101,8.12,"pounds",0,4,3
+"1533","DAISY","Spayed Female","Canine",4033,35.5,"pounds",0,4,3
+"5103","DAISY","Neutered Male","Feline",6224,7,"pounds",0,4,3
+"1535","BUDDY","Male","Feline",3962,1.8,"pounds",0,2,2
+"1549","SHELBY","Spayed Female","Canine",5896,34.7,"pounds",0,2,2
+"1536","BUDDY","Male","Canine",5725,6.3,"pounds",0,1,1
+"1537","HEINIKEN","Male","Canine",4435,4.1,"pounds",0,1,1
+"1539","COOKIE JANE","Spayed Female","Canine",4150,11,"pounds",0,1,1

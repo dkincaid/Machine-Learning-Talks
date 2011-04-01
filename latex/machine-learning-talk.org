@@ -18,7 +18,31 @@
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 :ETC
 
-* Introduction to Machine Learning
+* Introduction to Machine Learning from a Practical Perspective
+  :PROPERTIES:
+  :END:
+** Definitions and introduction to our species classifier
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+*** Definitions                                                     :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+**** <1->Target: the result of running the model
+**** <2->Features: the data elements used to predict
+**** <3->Training examples: the sets of features and targets used to construct the model
+**** <4->Machine learning: given the training data learn a mapping function $f(x)$ that can map feature variables to target variables
+*** - a species classifier                                        :B_example:
+| Name   | Sex    |  Age | Weight | Visits | Sibs | ActSibs | Species |
+|--------+--------+------+--------+--------+------+---------+---------|
+| Fluffy | Female |  200 |     12 |      2 |    1 |       3 | Feline  |
+| Spot   | Neuter | 1243 |     50 |      1 |    1 |       1 | Canine  |
+| Max    | Male   |   50 |      7 |      2 |    3 |       2 | Feline  |
+    :PROPERTIES:
+    :BEAMER_env: example
+    :BEAMER_envargs: <1->
+    :END:
 ** Types of machine learning
    :PROPERTIES:
    :BEAMER_envargs: [<+->]
@@ -27,7 +51,7 @@
     :PROPERTIES:
     :BEAMER_env: alertblock
     :END:
-    Learning using examples which have both features and the desired target.
+    Learning using training examples which have both features and the desired target.
 *** Unsupervised learning                                           :B_block:
     :PROPERTIES:
     :BEAMER_env: block
@@ -60,6 +84,32 @@
     :BEAMER_envargs: <2->
     :END:
 **** Target is a discrete set of classes
+**** Binary or multiclass
+** Feature representation
+\small
+*** \textbf{Continuous features (numerical):} Represented as themselves. Depending on the algorithm may need to be standardized ($N(0,1)$) or normalized ([0,1])
+*** \textbf{Categorical features (ordinal, text) also known as factors or levels:}
+    can be represented as dummy variables.
+*** Species data                                                  :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :END:
+\small
+| Name   | Sex    |  Age | Weight | Visits | Sibs | ActSibs | Species |
+|--------+--------+------+--------+--------+------+---------+---------|
+| Fluffy | Female |  200 |     12 |      2 |    1 |       3 | Feline  |
+| Spot   | Neuter | 1243 |     50 |      1 |    1 |       1 | Canine  |
+| Max    | Male   |   50 |      7 |      2 |    3 |       2 | Feline  |
+
+becomes:
+
+\scriptsize
+| Sex    |  Age | Weight | Visits | Sibs | ActSibs | Fluffy | Spot | Max | Species |
+|--------+------+--------+--------+------+---------+--------+------+-----+---------|
+| Female |  200 |     12 |      2 |    1 |       3 |  1     |  0   |  0  | Feline  |
+| Neuter | 1243 |     50 |      1 |    1 |       1 |  0     |  1   |  0  | Canine  |
+| Male   |   50 |      7 |      2 |    3 |       2 |  0     |  0   |  1  | Feline  |
+\normalsize
 ** Short List of Algorithms
 *** Supervised learning algorithms                            :BMCOL:B_block:
     :PROPERTIES:
@@ -68,13 +118,13 @@
     :BEAMER_envargs: C[t]
     :END:
 **** \alert{Naive Bayes}
-**** \alert{Support Vector Machines (SVM)}
 **** \alert{k-Nearest Neighbors}
 **** Decision trees (C4.5)
-**** Random forests
+**** \alert{Random forests}
 **** Logistic regression
-**** Stochastic Gradient Descent
+**** Support Vector Machines (SVM)
 **** Artificial Neural networks
+**** Stochastic Gradient Descent
 *** Unsupervised learning algorithms                          :BMCOL:B_block:
     :PROPERTIES:
     :BEAMER_col: 0.45
@@ -151,13 +201,13 @@
     \----------/        \-----------/       \-------------/
 #+end_ditaa
 * Species Classifier Example
-** Species classifier
+** Species Classifier
 *** Species Classifier Example                                    :B_example:
     :PROPERTIES:
     :BEAMER_env: example
     :BEAMER_envargs: <1->
     :END:
-**** Features: age, weight, # of visits, # of siblings
+**** Features: name, age, weight, # of visits, # of siblings
 **** Target: Species
 *** Algorithms                                                      :B_block:
     :PROPERTIES:
@@ -166,33 +216,56 @@
     :END:
 **** Naive Bayes
 **** k-Nearest Neighbors
-**** Support Vector Machine
+**** Random Forest
 *** Code used                                                  :B_alertblock:
     :PROPERTIES:
     :BEAMER_env: alertblock
     :BEAMER_envargs: <3->
     :END:
 **** R with caret package (and others in a supporting role)
+** Species Classifier: Sample data
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+Total number of training examples: 72,696
+\scriptsize
+|----------------+---------------+------+--------+--------+---------+---------+---------|
+| Name           | Sex           |  Age | Weight | Visits | TotSibs | ActSibs | Species |
+|----------------+---------------+------+--------+--------+---------+---------+---------|
+| NIKA           | Spayed Female | 5215 |    8.2 |      0 |       1 |       1 | Feline  |
+| SOPHIE         | Spayed Female | 1101 |   8.12 |      0 |       4 |       3 | Feline  |
+| DIXIE          | Spayed Female | 4033 |   35.5 |      0 |       4 |       3 | Canine  |
+| SAMBO          | Neutered Male | 6224 |      7 |      0 |       4 |       3 | Feline  |
+| BUDDY          | Male          | 3962 |    1.8 |      0 |       2 |       2 | Feline  |
+| SHELBY         | Spayed Female | 5896 |   34.7 |      0 |       2 |       2 | Canine  |
+| OTIS           | Male          | 5725 |    6.3 |      0 |       1 |       1 | Canine  |
+| HEINIKEN       | Male          | 4435 |    4.1 |      0 |       1 |       1 | Canine  |
+| COOKIE JANE    | Spayed Female | 4150 |     11 |      0 |       1 |       1 | Canine  |
+| SERENDIPITY    | Spayed Female | 3952 |     12 |      0 |       2 |       2 | Feline  |
+| Phoebe         | Female        | 5040 |      3 |      0 |       2 |       1 | Feline  |
+| Riley          | Neutered Male | 4985 |   4.38 |      0 |       2 |       1 | Feline  |
+| Puck           | Neutered Male | 5562 |  29.38 |      0 |       2 |       2 | Canine  |
+| Puck.Ee        | Female        | 5137 |  15.38 |      0 |       2 |       2 | Canine  |
+| Marley         | Neutered Male | 5466 |  71.19 |      0 |       1 |       1 | Canine  |
+| Atlas          | Male          | 4422 |  18.56 |      0 |       3 |       1 | Canine  |
+| Cachet         | Spayed Female | 6249 |   5.19 |      0 |       3 |       1 | Canine  |
+| CACHET3        | Spayed Female | 4422 |   17.7 |      0 |       3 |       1 | Canine  |
+| Stanley        | Neutered Male | 9640 |   4.38 |      0 |       1 |       0 | Feline  |
+| Coco           | Female        | 5562 |     51 |      0 |       3 |       1 | Canine  |
+|----------------+---------------+------+--------+--------+---------+---------+---------|
+\normalsize
 ** Species Classifier: Load the data
 #+BEGIN_src R
-species.full = read.table("../data/species.csv",
+species.full = read.table("../data/speciesprocesses.csv",
                           header=T, sep=",")
-species.full = species.full[
-                species.features$species=="Canine" |
-                species.features$species=="Feline",]
-species.full = species.full[species.full$age < 20000,]
-species.full = species.full[species.full$age > 0,]
-species.full = species.full[
-                species.full$units =="pounds",]
-species.full = species.full[
-                species.full$weight < 1000,]
 #+END_src
+
+   Explore the data
 ** Species Classifier: Reformat and split the data
 #+BEGIN_src R
 species.features = subset(species.full,
-                        select=c("age","weight"))
+                        select=c("age","weight", ...))
 species.targets = subset(species.full, select="species")
-species.targets = species.targets$species[drop=TRUE]
 
 library(caret)
 set1index = createDataPartition(species.targets,
@@ -203,7 +276,8 @@ species.targets.train = species.targets[-set1index]
 species.features.train = species.features[-set1index]
 #+END_src
 ** Algorithms: Naive Bayes
-High level description of the Naive Bayes algorithm
+   High level description of the Naive Bayes algorithm
+   
 ** Species Classifier: Naive Bayes: Train, Test, Measure
 *** Train the model                                                 :B_block:
     :PROPERTIES:
@@ -258,15 +332,87 @@ confusionMatrix(speciesPredictions$pred,
 \end{center}
 ** Algorithms: k-Nearest Neighbors
 High level description of the k-Nearest Neighbors algorithm
-** Species Classifier: kNN: Train the model
-** Species Classifier: kNN: Test the model
-** Species Classifier: kNN: Measure the accuracy
-** Algorithms: Support Vector Machine
-High level description of the Support Vector Machine algorithm
-** Species Classifier: SVM: Train the model
-** Species Classifier: SVM: Test the model
-** Species Classifier: SVM: Measure the accuracy
+** Species Classifier: kNN: Train, Test, Measure
+*** Train the model                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <1->
+    :END:
+#+BEGIN_src R
+knnmodel = train(species.features.train,
+                species.targets.train,"knn")
+#+END_src
+*** Test the model                                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+#+BEGIN_src R
+speciesPredictions = extractPrediction(list(knnmodel),
+              testX=species.features.test,
+              testY=species.targets.test)
+speciesPredictions = speciesPredictions[
+            speciesPredictions$dataType == "Test",]
+#+END_src
+*** Measure the accuracy                                            :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <3->
+    :END:
+#+BEGIN_src R
+confusionMatrix(speciesPredictions$pred,
+                speciesPredictions$obs)
+#+END_src
+
+** Algorithms: Random Forest
+   High level description of the Support Vector Machine algorith
+** Species Classifier: Random Forest: Train, Test, Measure
+*** Train the model                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <1->
+    :END:
+#+BEGIN_src R
+rfmodel = train(species.features.train,
+                species.targets.train,"rf")
+#+END_src
+*** Test the model                                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+#+BEGIN_src R
+speciesPredictions = extractPrediction(list(rfmodel),
+              testX=species.features.test,
+              testY=species.targets.test)
+speciesPredictions = speciesPredictions[
+            speciesPredictions$dataType == "Test",]
+#+END_src
+*** Measure the accuracy                                            :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <3->
+    :END:
+#+BEGIN_src R
+confusionMatrix(speciesPredictions$pred,
+                speciesPredictions$obs)
+#+END_src
 ** Summary Comparison of the Models
+|--------------------+---------------+-----------------+----------|
+| Algorithm          | Time To Train | Time to Predict | Accuracy |
+|--------------------+---------------+-----------------+----------|
+| Naive Bayes        |               |                 |          |
+| k-Nearest Neighbor |               |                 |          |
+| Random Forest      |               |                 |          |
+|--------------------+---------------+-----------------+----------|
+
+** Next steps for the Species Classifier
+*** Get more data
+*** Look for other features
+*** Try other algorithms and validation methods
+*** \alert{Utilize the species labels from the data under prediction}
+    :PROPERTIES:
+    :END:
 * References
 ** Links
 *** Code and slides for this talk: http://bit.ly/f8ce6f

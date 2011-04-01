@@ -1,19 +1,24 @@
 library(caret)
-species.full = read.table("../data/species.csv",header=T,sep=",",quote="'")
+species.full = read.table("../data/speciesprocessed.csv",header=T,sep=",")
 species.full = species.full[species.full$species=="Canine" | species.full$species=="Feline",]
 species.full = species.full[species.full$age < 20000,]
 species.full = species.full[species.full$age > 0,]
 species.full = species.full[species.full$units =="pounds",]
 species.full = species.full[species.full$weight < 1000,]
 species.full = na.omit(species.full)
-species.features = subset(species.full,select=c("sex","age","weight","visits","totsibs","actsibs"))
+species.features = subset(species.full,select=c("name","sex","age","weight","visits","totsibs","actsibs"))
 species.features$name = species.features$name[drop=T]
 
-#namefreq = as.data.frame(with(species.features, table(name)))
-#excludename = namefreq[namefreq$Freq < 25,"name"]
-#modelmatrix = model.matrix(~ name - 1, data=species.features, excludes=excludename)
-modelmatrix = model.matrix(~ sex - 1, data=species.features)
-subset(species.features,select=c("age","weight","visits","totsibs","actsibs"))
+namefreq = as.data.frame(with(species.features, table(name)))
+excludename = as.character(namefreq[namefreq$Freq < 100,"name"])
+badnames = as.integer(rownames(species.features[species.features$name %in% excludename,]))
+levels(species.features$name) = c(levels(species.features$name),"Other")
+species.features[badnames,]$name = "Other"
+species.features$name = species.features$name[drop=T]
+
+modelmatrix = model.matrix(~ name - 1, data=species.features)
+#modelmatrix = model.matrix(~ sex - 1, data=species.features)
+species.features = subset(species.features,select=c("age","weight","visits","totsibs","actsibs"))
 species.features = cbind(species.features, modelmatrix)
 
 species.targets = subset(species.full, select="species")
@@ -38,9 +43,9 @@ speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
 
-svmmodel = train(species.features.train,species.targets.train,"svmLinear")
+rfmodel = train(species.features.train,species.targets.train,"rf")
 
-speciesPredictions = extractPrediction(list(svmmodel),testX=species.features.test,testY=species.targets.test)
+speciesPredictions = extractPrediction(list(rfmodel),testX=species.features.test,testY=species.targets.test)
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
