@@ -1,24 +1,25 @@
 #+TITLE:     Introduction to Machine Learning
 #+AUTHOR:    Dave Kincaid
 #+EMAIL:     kincaid.dave@gmail.com
-#+DATE:      4/1/2011
+#+DATE:      4/8/2011
 #+DESCRIPTION: A short introduction to machine learning with an application using R.
 #+KEYWORDS: ai, machinelearning, R, Rstats
 #+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc email:t
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:nil <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:nil email:t
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+STARTUP: beamer
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [presentation]
+#+LaTeX_HEADER: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Topic}\tableofcontents[currentsection]\end{frame}}
 #+BEAMER_FRAME_LEVEL: 2
-#+BEAMER_HEADER_EXTRA: \usetheme{Boadilla}\usecolortheme{beaver}\usepackage{palatino}\institute{IDEXX Laboratories, Inc.}
+#+BEAMER_HEADER_EXTRA: \usetheme{Boadilla}\usecolortheme{beaver}\usepackage{palatino}\usepackage{tikz}\usepackage{ifsym}\institute{IDEXX Laboratories, Inc.}
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 :ETC
 
-* Introduction to Machine Learning from a Practical Perspective
+* Overview of Machine Learning
   :PROPERTIES:
   :END:
 ** Definitions and introduction to our species classifier
@@ -33,7 +34,7 @@
 **** <2->Features: the data elements used to predict
 **** <3->Training examples: the sets of features and targets used to construct the model
 **** <4->Machine learning: given the training data learn a mapping function $f(x)$ that can map feature variables to target variables
-*** - a species classifier                                        :B_example:
+*** a species classifier                                          :B_example:
 | Name   | Sex    |  Age | Weight | Visits | Sibs | ActSibs | Species |
 |--------+--------+------+--------+--------+------+---------+---------|
 | Fluffy | Female |  200 |     12 |      2 |    1 |       3 | Feline  |
@@ -78,10 +79,10 @@
     :BEAMER_envargs: <1->
     :END:
 **** The target is a continuous number
-*** Classification                                                  :B_block:
+*** Classification                                             :B_alertblock:
     :PROPERTIES:
-    :BEAMER_env: block
     :BEAMER_envargs: <2->
+    :BEAMER_env: alertblock
     :END:
 **** Target is a discrete set of classes
 **** Binary or multiclass
@@ -118,12 +119,12 @@ becomes:
     :BEAMER_envargs: C[t]
     :END:
 **** \alert{Naive Bayes}
-**** \alert{k-Nearest Neighbors}
-**** Decision trees (C4.5)
+**** k-Nearest Neighbors
+**** Decision trees
 **** \alert{Random forests}
 **** Logistic regression
 **** Support Vector Machines (SVM)
-**** Artificial Neural networks
+**** \alert{Artificial Neural networks}
 **** Stochastic Gradient Descent
 *** Unsupervised learning algorithms                          :BMCOL:B_block:
     :PROPERTIES:
@@ -214,20 +215,33 @@ becomes:
     :BEAMER_env: block
     :BEAMER_envargs: <2->
     :END:
-**** Naive Bayes
-**** k-Nearest Neighbors
-**** Random Forest
+**** Naive Bayes - probabilistic
+**** Artificial neural network - weighting and combination of features
+**** Random Forest - based on decision trees
 *** Code used                                                  :B_alertblock:
     :PROPERTIES:
     :BEAMER_env: alertblock
     :BEAMER_envargs: <3->
     :END:
 **** R with caret package (and others in a supporting role)
+** R software and the Caret package
+*** R Software Package                                              :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+**** Open source, free language and environment for statistical computing and graphics.
+**** Provides a wide variety of statistical (linear and nonlinear modelling, classical statistical tests, time-series analysis, classification, clustering, ...) and graphical techniques, and is highly extensible.
+*** Caret package (Classification and Regression Training)          :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+**** Massively streamlines and simplifies the process for creating predictive models.
+**** Tools for data splitting, pre-processing, model tuning, variable importance estimation
 ** Species Classifier: Sample data
    :PROPERTIES:
    :BEAMER_envargs: C[t]
    :END:
-Total number of training examples: 72,696
+Total number of training examples: 72,696 with 69 features
 \scriptsize
 |----------------+---------------+------+--------+--------+---------+---------+---------|
 | Name           | Sex           |  Age | Weight | Visits | TotSibs | ActSibs | Species |
@@ -256,16 +270,15 @@ Total number of training examples: 72,696
 \normalsize
 ** Species Classifier: Load the data
 #+BEGIN_src R
-species.full = read.table("../data/speciesprocesses.csv",
-                          header=T, sep=",")
+species.full = read.table
+           ("../data/speciesprocesses.csv",
+                        header=T, sep=",")
 #+END_src
-
-   Explore the data
 ** Species Classifier: Reformat and split the data
 #+BEGIN_src R
 species.features = subset(species.full,
                         select=c("age","weight", ...))
-species.targets = subset(species.full, select="species")
+species.targets = subset(species.full,select="species")
 
 library(caret)
 set1index = createDataPartition(species.targets,
@@ -275,9 +288,66 @@ species.features.test = species.features[set1index,]
 species.targets.train = species.targets[-set1index]
 species.features.train = species.features[-set1index]
 #+END_src
-** Algorithms: Naive Bayes
-   High level description of the Naive Bayes algorithm
-   
+* Species Classifier and Naive Bayes
+** Algorithms: Naive Bayes - Overview
+   Rooted in probability theory and based on Bayes Theorem. The \textbf{Naive} part comes from
+   the simplifying assumption that the features are independent.
+
+   \vspace{1cm}
+
+   Notation:
+   \[ X = \text{vector of features} \quad C_j = \text{targets} \]
+   \[ P(X) = \text{probability of obtaining the features } X \]
+   \[ P(X|C_j) = \text{probability of obtaining } X \text{ given a value of } C_j \]
+   \[ P(X,C_j) = \text{joint probability of } X \text{ and } C_j \text{ happening together} \]
+** Algorithms: Naive Bayes - Bayes Theorem
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+#+BEGIN_LaTeX
+\large\bfseries
+   \begin{center} Bayes Theorem \end{center}
+\normalsize\normalfont
+\[ P(C_j|X) = \frac{P(X|C_j)P(C_j)}{P(X)} \]
+\uncover<2>{\[ posterior = \frac{likelihood\times prior}{evidence} \]}
+#+END_LaTeX
+** Algorithms: Naive Bayes - Small Example
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+|---------+--------+--------|
+| Species | Weight | Sex    |
+|---------+--------+--------|
+| Canine  |     35 | Male   |
+| Feline  |      8 | Female |
+| Feline  |     15 | Female |
+| Feline  |     10 | Male   |
+| Canine  |     75 | Female |
+|---------+--------+--------|
+
+#+BEGIN_LaTeX
+\only<1>{The goal is to calculate the probabilities of each species given a weight and a sex.}
+\uncover<2->{Training the model consists of calulating all the terms on the right hand side:}
+\only<1-2>{\[ P(Canine|W=a, S=b) = \frac{P(W=a,S=b|Canine)P(Canine)}{P(W=a,S=b)} \] 
+\[ P(Feline|W=a, S=b) = \frac{P(W=a,S=b|Feline)P(Feline)}{P(W=a,S=b)} \]}
+\uncover<3->{\[ P(Canine) = \frac{2}{5} = 0.4 \quad P(Feline) = \frac{3}{5} = 0.6\]}
+\uncover<4->{\[ P(W=a,S=b|Canine)=P(W=a|Canine)P(S=b|Canine)\]}
+\uncover<5->{\[=\frac{1}{\sqrt{2\pi\sigma_{canine}^2}}e^{-(a-\mu_{canine})^2/(2\sigma_{canine}^2)}\left(\frac{1}{2}\right)\]}
+#+END_LaTeX
+** Algorithms: Naive Bayes - Bayes Theorem
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+#+BEGIN_LaTeX
+\large\bfseries
+   \begin{center} Bayes Theorem \end{center}
+\normalsize\normalfont
+\[ P(C_j|X) = \frac{P(X|C_j)P(C_j)}{P(X)} \]
+#+END_LaTeX
+Now that we know all the terms on the right hand side, given a weight and a sex
+we can calculate the probabilities on the left for each class (Canine and Feline) and compare.
+\[ P(Canine|W=25,S=Male) = P(Canine)P(W=25,S=Male|Canine) \]
+\[ P(Feline|W=25,S=Male) = P(Feline)P(W=25,S=Male|Feline) \]
 ** Species Classifier: Naive Bayes: Train, Test, Measure
 *** Train the model                                                 :B_block:
     :PROPERTIES:
@@ -314,33 +384,117 @@ confusionMatrix(speciesPredictions$pred,
 \begin{minipage}{0.7\textwidth}
 #+BEGIN_src text
     Confusion Matrix and Statistics
- 
-                 Reference
-     Prediction Canine Feline
-        Canine   6570   1087
-        Feline   1113   1606
-                                         
-            Accuracy : 0.788         
-              95% CI : (0.78, 0.7958)
-    Information Rate : 0.7405        
- P-Value [Acc > NIR] : <2e-16        
-                                        
-         Sensitivity : 0.8551        
-         Specificity : 0.5964        
+
+                      Reference
+           Prediction Canine Feline
+              Canine   8237   1296
+              Feline   1923   3084
+                                          
+               Accuracy : 0.7786          
+                 95% CI : (0.7718, 0.7853)
+    No Information Rate : 0.6988          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+            Sensitivity : 0.8107          
+            Specificity : 0.7041          
 #+END_src
 \end{minipage}
 \end{center}
-** Algorithms: k-Nearest Neighbors
-High level description of the k-Nearest Neighbors algorithm
-** Species Classifier: kNN: Train, Test, Measure
+* Species Classifier and Artificial Neural Networks
+** Algorithms: Artificial Neural Network - Neuron Model
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+#+BEGIN_LaTeX
+\begin{center}\bfseries{McCulloch and Pitt's Neuron Model}\end{center}
+\begin{center}
+\begin{tikzpicture}
+\draw[->,semithick] (-1,1) -- (0,0.25);
+\node at (-1.5,1) {\Large{$x_1$}};
+\node at (-0.5,0.75) {$w_1$};
+\draw[->,semithick] (-1,0) -- (0,0);
+\node at (-1.5,0) {\Large{$x_2$}};
+\node at (-0.5,0.4) {$w_2$};
+\draw[->,semithick] (-1,-1) -- (0,-0.25);
+\node at (-1.5,-1) {\Large{$x_3$}};
+\node at (-0.5,-0.4) {$w_3$};
+\draw[semithick] (0,1) rectangle (1.5,-1);
+\draw[semithick] (3,1) rectangle (4.5,-1);
+\draw[->,semithick] (1.5,0) -- (3,0);
+\node[above] at (2.25,0) {\Large{$h$}};
+\node at (0.75,0) {\huge{$\Sigma$}};
+\node at (3.75,0) {\LARGE{\textifsym{L|H}}};
+\draw[->,semithick] (4.5,0) -- (5.5,0);
+\node at (6,0) {\huge{O}};
+\end{tikzpicture}
+\uncover<2>{\[ h = \sum_{i=1}^n w_ix_i, \quad O = g(h) = \left\{ \begin{array}{lr} 0 & h < \theta \\ 1 & h > \theta \end{array} \right. \]}
+\end{center}
+#+END_LaTeX
+** Algorithms: ANN - Perceptron
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+#+BEGIN_LaTeX
+\begin{center}\bfseries{The Perceptron}\end{center}
+\begin{center}
+\begin{tikzpicture}
+\foreach \y in {-2,...,2}
+  {\fill[gray!70!white] (-2,\y) circle (0.25cm);
+   \fill[black] (2,\y) circle (0.25cm);
+   \draw (2.25,\y+0.25) rectangle (2.75,\y-0.25);
+   \node at (2.5,\y) {\tiny{\textifsym{L|H}}}; }
+\foreach \y in {-2,...,2}
+  \foreach \w in {-2,...,2}
+    \draw (-1.75,\y) -- (1.75,\w);
+\draw[ultra thick,->] (-3.5,0) node[below] {Inputs} -- (-2.25,0) ;
+\draw[ultra thick,->] (2.75,0) -- (4,0) node[below] {Outputs};
+\end{tikzpicture}
+
+One input for each feature and one output for each class in the target
+\end{center}
+#+END_LaTeX
+** Algorithms: ANN - Multilayer Perceptron
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+#+BEGIN_LaTeX
+\begin{center}\bfseries{Multilayer Perceptron}\end{center}
+\begin{center}
+\begin{tikzpicture}
+\foreach \y in {-2,...,2}
+  \fill[gray!70!white] (-2,\y) circle (0.25cm);
+\foreach \y in {-1,...,1}
+  { \fill[black] (0,\y) circle (0.25cm);
+   \fill[black] (2,\y) circle (0.25cm);
+   \draw (2.25,\y+0.25) rectangle (2.75,\y-0.25);
+   \node at (2.5,\y) {\tiny{\textifsym{L|H}}}; }
+\foreach \y in {-2,...,2}
+  \foreach \w in {-1,...,1}
+    \draw (-1.75,\y) -- (-0.25,\w);
+\foreach \y in {-1,...,1}
+  \foreach \w in {-1,...,1}
+      \draw (0.25,\y) -- (1.75,\w);
+\draw[ultra thick,->] (-3.5,0) node[below] {Inputs} -- (-2.25,0) ;
+\draw[ultra thick,->] (2.75,0) -- (4,0) node[below] {Outputs};
+\node at (-2,-2.5) { Input };
+\node at (0,-2.5) { Hidden };
+\node at (2,-2.5) { Output };
+\end{tikzpicture}
+
+Again, one input for each feature, one output for each class in the target.
+There can be any number of neurons in each hidden layer and any number of
+hidden layers.
+\end{center}
+#+END_LaTeX
+** Species Classifier: ANN: Train, Test, Measure
 *** Train the model                                                 :B_block:
     :PROPERTIES:
     :BEAMER_env: block
     :BEAMER_envargs: <1->
     :END:
 #+BEGIN_src R
-knnmodel = train(species.features.train,
-                species.targets.train,"knn")
+annmodel = train(species.features.train,
+                species.targets.train,"nnet")
 #+END_src
 *** Test the model                                                  :B_block:
     :PROPERTIES:
@@ -348,7 +502,7 @@ knnmodel = train(species.features.train,
     :BEAMER_envargs: <2->
     :END:
 #+BEGIN_src R
-speciesPredictions = extractPrediction(list(knnmodel),
+speciesPredictions = extractPrediction(list(annmodel),
               testX=species.features.test,
               testY=species.targets.test)
 speciesPredictions = speciesPredictions[
@@ -363,9 +517,117 @@ speciesPredictions = speciesPredictions[
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
+** Species Classifier: ANN: Results
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+#+BEGIN_src text
+Confusion Matrix and Statistics
+
+                   Reference
+       Prediction Canine Feline
+         Canine   8916   1366
+         Feline   1244   3014
+                                          
+           Accuracy : 0.8205          
+             95% CI : (0.8142, 0.8267)
+No Information Rate : 0.6988          
+P-Value [Acc > NIR] : < 2e-16         
+
+        Sensitivity : 0.8776          
+        Specificity : 0.6881          
+#+END_src
+\end{minipage}
+\end{center}
+* Species Classifier and Random Forest
+** Algorithms: Random Forest - Overview
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+   The Random Forest algorithm uses random sets of examples and features
+   to create Decision Trees. These Decision Trees are then combined 
+   to give a predicted result.
+
+#+BEGIN_LaTeX
+\vspace{2cm}
+\uncover<2>{\begin{center}\Huge{What is a Decision Tree?}\end{center}}
+#+END_LaTeX
+** Algorithms: Random Forest - Decision Tree Overview
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+   A Decision Tree breaks down the classification into individual decisions
+   about each feature one by one. The classification starts from the \emph{root}
+   node and progresses through a set of decisions to arrive at a \emph{leaf}
+   node where the decision is given.
+
+#+BEGIN_LaTeX
+\begin{center}
+    \begin{tikzpicture}[scale=0.5]
+      \draw (-2,0) rectangle (2,-1);
+      \draw[->,thick] (0,-1) -- (-4,-3);
+      \draw[->,thick] (0,-1) -- (4,-3);
+      \draw (-6,-3) rectangle (-2, -4);
+      \draw (6,-3) rectangle (2,-4);
+
+      \draw[->,thick] (-4,-4) -- (-6,-5.5);
+      \draw[->,thick] (-4,-4) -- (-2,-5.5);
+      \draw[->,thick] (4,-4) -- (2,-5.5);
+      \draw[->,thick] (4,-4) -- (6,-5.5);
+    \end{tikzpicture}
+\end{center}
+#+END_LaTeX
+
+** Algorithms: Random Forest - Decision Tree Example
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+
+|---------+--------+--------|
+| Species | Weight | Sex    |
+|---------+--------+--------|
+| Canine  |     35 | Male   |
+| Feline  |      8 | Female |
+| Feline  |     15 | Female |
+| Feline  |     10 | Male   |
+| Canine  |     75 | Female |
+|---------+--------+--------|
+
+#+BEGIN_LaTeX
+\begin{center}
+    \begin{tikzpicture}[scale=0.5]
+      \draw (-2,0) rectangle (2,-1) node at (0,-0.5) {sex};
+      \draw<2->[->,thick] (0,-1) -- node[anchor=east,blue] {\footnotesize{male}} (-4,-3);
+      \draw<2->[->,thick] (0,-1) -- node[anchor=west,blue] {\footnotesize{female}} (4,-3);
+      \draw<2-> (-6,-3) rectangle (-2, -4) node at (-4,-3.5) {weight};
+      \draw<2-> (6,-3) rectangle (2,-4) node at (4,-3.5) {weight};
+
+      \draw<3->[->,thick] (-4,-4) -- node[anchor=east,blue] {\footnotesize{$<20$}} (-6,-5.5) node[below] {feline};
+      \draw<3->[->,thick] (-4,-4) -- node[anchor=west,blue] {\footnotesize{$>20$}} (-2,-5.5) node[below] {canine};
+      \draw<4->[->,thick] (4,-4) -- node[anchor=east,blue] {\footnotesize{$<15$}} (2,-5.5) node[below] {feline};
+      \draw<4->[->,thick] (4,-4) -- node[anchor=west,blue] {\footnotesize{$>15$}} (6,-5.5) node[below] {feline};
+    \end{tikzpicture}
+\end{center}
+#+END_LaTeX
 
 ** Algorithms: Random Forest
-   High level description of the Support Vector Machine algorith
+   :PROPERTIES:
+   :BEAMER_envargs: C[t]
+   :END:
+*** Training the model                                              :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+1. Choose a random set of features and a random set of examples
+2. Construct a decision tree using the selected subset of features and examples
+3. Repeat some large number of times (ex. 100)
+*** Using the model                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_envargs: <2->
+    :END:
+1. Run the features through all of the decision trees produced above
+2. Combine the outputs of the decision trees to produce a prediction
+
 ** Species Classifier: Random Forest: Train, Test, Measure
 *** Train the model                                                 :B_block:
     :PROPERTIES:
@@ -397,15 +659,40 @@ speciesPredictions = speciesPredictions[
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
-** Summary Comparison of the Models
-|--------------------+---------------+-----------------+----------|
-| Algorithm          | Time To Train | Time to Predict | Accuracy |
-|--------------------+---------------+-----------------+----------|
-| Naive Bayes        |               |                 |          |
-| k-Nearest Neighbor |               |                 |          |
-| Random Forest      |               |                 |          |
-|--------------------+---------------+-----------------+----------|
+** Species Classifier: Random Forest: Results
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+#+BEGIN_src text
+      Confusion Matrix and Statistics
 
+                    Reference
+        Prediction Canine Feline
+           Canine   8986   1166
+           Feline   1174   3214
+                                        
+           Accuracy : 0.8391        
+             95% CI : (0.833, 0.845)
+No Information Rate : 0.6988        
+P-Value [Acc > NIR] : <2e-16        
+    
+        Sensitivity : 0.8844        
+        Specificity : 0.7338        
+#+END_src
+\end{minipage}
+\end{center}
+* Summary of the 3 algorithms and next steps
+** Summary Comparison of the Models
+|---------------+---------------+-----------------+----------|
+| Algorithm     | Time To Train | Time to Predict | Accuracy |
+|               |     (min)     |      (sec)      |          |
+|---------------+---------------+-----------------+----------|
+| Naive Bayes   |               |          86.542 |   0.7786 |
+| ANN           |        115.08 |           3.221 |   0.8205 |
+| Random Forest |               |          18.539 |   0.8391 |
+|---------------+---------------+-----------------+----------|
+\footnotesize{Measurements were taken using R running on an Amazon EC2 Large instance 
+(7.5 GB of memory, 4 EC2 Compute Units (2 virtual cores with
+ 2 EC2 Compute Units each), 850 GB of local instance storage, 64-bit platform)}
 ** Next steps for the Species Classifier
 *** Get more data
 *** Look for other features
@@ -417,8 +704,9 @@ confusionMatrix(speciesPredictions$pred,
 ** Links
 *** Code and slides for this talk: http://bit.ly/f8ce6f
 *** My machine learning bookmarks: http://bit.ly/ebRPT1
-*** R stats package: http://www.r-project.org
+*** R stats software package: http://www.r-project.org
 *** RStudio GUI: http://www.rstudio.org
+*** Caret R package: [[http://caret.r-forge.r-project.org/Classification_and_Regression_Training.html][http://caret.r-forge.r-project.org]] 
 *** Machine Learning competitions: http://www.kaggle.com
 *** Iain Murray's "Introduction to Machine Learning Videos": http://bit.ly/fSg4rG
 *** Andrew Ng's Stanford Machine Learning course: http://bit.ly/fvafuI 
