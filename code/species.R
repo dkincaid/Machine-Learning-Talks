@@ -17,7 +17,7 @@ species.features[badnames,]$name = "Other"
 species.features$name = species.features$name[drop=T]
 
 modelmatrix = model.matrix(~ name - 1, data=species.features)
-#modelmatrix = model.matrix(~ sex - 1, data=species.features)
+modelmatrix = model.matrix(~ sex - 1, data=species.features)
 species.features = subset(species.features,select=c("age","weight","visits","totsibs","actsibs"))
 species.features = cbind(species.features, modelmatrix)
 
