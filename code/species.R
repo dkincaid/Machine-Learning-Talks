@@ -27,7 +27,10 @@ species.features.train = species.features[-set1index,]
 annmodel = train(species.features.train,species.targets.train,"nnet")
 
 speciesPredictions = extractPrediction(list(annmodel),testX=species.features.test,testY=species.targets.test)
+plotObsVsPred(speciesPredictions)
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
+speciesProbs = extractProb(list(annmodel),testX=species.features.test,testY=species.targets.test)
+plotClassProbs(speciesProbs)
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
 nbmodel = train(species.features.train,species.targets.train,"nb")
@@ -36,10 +39,10 @@ speciesPredictions = extractPrediction(list(nbmodel),testX=species.features.test
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
-
 rfmodel = train(species.features.train,species.targets.train,"rf")
 
 speciesPredictions = extractPrediction(list(rfmodel),testX=species.features.test,testY=species.targets.test)
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
+speciesProbs = extractProb(list(rfmodel),testX=species.features.test,testY=species.targets.test)
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
