@@ -164,6 +164,7 @@ becomes:
     :END:
 **** IKVM & Weka
 **** AForge.NET & Accord.NET
+**** Infer.NET
 *** Others                                                          :B_block:
     :PROPERTIES:
     :BEAMER_env: block
@@ -208,7 +209,7 @@ becomes:
     :BEAMER_env: example
     :BEAMER_envargs: <1->
     :END:
-**** Features: name, age, weight, # of visits, # of siblings
+**** Features: name, sex, age, weight, # of visits, # of siblings
 **** Target: Species
 *** Algorithms                                                      :B_block:
     :PROPERTIES:
@@ -660,7 +661,7 @@ Final model: a 69-5-1 network with 356 weights
       \draw<3->[->,thick] (-4,-4) -- node[anchor=east,blue] {\footnotesize{$<20$}} (-6,-5.5) node[below] {feline};
       \draw<3->[->,thick] (-4,-4) -- node[anchor=west,blue] {\footnotesize{$>20$}} (-2,-5.5) node[below] {canine};
       \draw<4->[->,thick] (4,-4) -- node[anchor=east,blue] {\footnotesize{$<15$}} (2,-5.5) node[below] {feline};
-      \draw<4->[->,thick] (4,-4) -- node[anchor=west,blue] {\footnotesize{$>15$}} (6,-5.5) node[below] {feline};
+      \draw<4->[->,thick] (4,-4) -- node[anchor=west,blue] {\footnotesize{$>15$}} (6,-5.5) node[below] {canine};
     \end{tikzpicture}
 \end{center}
 #+END_LaTeX
