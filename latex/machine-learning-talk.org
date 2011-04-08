@@ -383,7 +383,9 @@ confusionMatrix(speciesPredictions$pred,
 ** Species Classifier: Naive Bayes: Training output
 #+BEGIN_src text
 Fitting: usekernel=TRUE 
-Fitting: usekernel=FALSE
+Fitting: usekernel=FALSE 
+Error in NaiveBayes.default(X, Y, ...) : 
+  Zero variances for at least one class in variables: sexOther, sexUnknown
 #+END_src
 ** Species Classifier: Naive Bayes: Results
 \scriptsize
@@ -420,9 +422,6 @@ The final value used for the model was usekernel = TRUE.
                  95% CI : (0.7718, 0.7853)
     No Information Rate : 0.6988          
     P-Value [Acc > NIR] : < 2.2e-16       
-                                          
-            Sensitivity : 0.8107          
-            Specificity : 0.7041          
 #+END_src
 \end{minipage}
 \end{center}
