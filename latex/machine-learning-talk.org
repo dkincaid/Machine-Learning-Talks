@@ -379,7 +379,32 @@ speciesPredictions = speciesPredictions[
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
+** Species Classifier: Naive Bayes: Training output
+#+BEGIN_src text
+Fitting: usekernel=TRUE 
+Fitting: usekernel=FALSE
+#+END_src
 ** Species Classifier: Naive Bayes: Results
+\scriptsize
+#+BEGIN_src text
+41502 samples
+    2 predictors
+
+Pre-processing:  
+Resampling: Bootstrap (25 reps) 
+
+Summary of sample sizes: 41502, 41502, 41502, 41502, 41502, 41502, ... 
+
+Resampling results across tuning parameters:
+
+  usekernel  Accuracy  Kappa  Accuracy SD  Kappa SD
+  FALSE      0.756     0.396  0.015        0.0835  
+  TRUE       0.779     0.463  0.00411      0.00745 
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was usekernel = TRUE. 
+#+END_src
+** Species Classifier: Naive Bayes: Confusion Matrix
 \begin{center}
 \begin{minipage}{0.7\textwidth}
 #+BEGIN_src text
@@ -517,7 +542,39 @@ speciesPredictions = speciesPredictions[
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
+** Species Classifier: ANN: Training output
+#+BEGIN_src text
+Fitting: 
+Fitting: 
+Fitting: 
+#+END_src
 ** Species Classifier: ANN: Results
+\scriptsize
+#+BEGIN_src text
+58155 samples
+   69 predictors
+
+Pre-processing:  
+Resampling: Bootstrap (25 reps) 
+
+Summary of sample sizes: 58155, 58155, 58155, 58155, 58155, 58155, ... 
+
+Resampling results across tuning parameters:
+  size  decay  Accuracy  Kappa   Accuracy SD  Kappa SD
+  1     0      0.703     0.0234  0.0244       0.117   
+  1     1e-04  0.704     0.0426  0.0178       0.147   
+  1     0.1    0.787     0.444   0.0514       0.255   
+  3     0      0.722     0.116   0.0487       0.237   
+  3     1e-04  0.738     0.208   0.0533       0.283   
+  3     0.1    0.81      0.54    0.034        0.163   
+  5     0      0.726     0.159   0.0463       0.261   
+  5     1e-04  0.74      0.21    0.0571       0.286   
+  5     0.1    0.816     0.564   0.0252       0.118   
+
+Accuracy was used to select the optimal model using  the largest value.
+The final values used for the model were size = 5 and decay = 0.1. 
+#+END_src
+** Species Classifier: ANN: Confusion matrix
 \begin{center}
 \begin{minipage}{0.7\textwidth}
 #+BEGIN_src text
@@ -533,8 +590,7 @@ Confusion Matrix and Statistics
 No Information Rate : 0.6988          
 P-Value [Acc > NIR] : < 2e-16         
 
-        Sensitivity : 0.8776          
-        Specificity : 0.6881          
+Final model: a 69-5-1 network with 356 weights
 #+END_src
 \end{minipage}
 \end{center}
@@ -619,7 +675,7 @@ P-Value [Acc > NIR] : < 2e-16
     :END:
 1. Choose a random set of features and a random set of examples
 2. Construct a decision tree using the selected subset of features and examples
-3. Repeat some large number of times (ex. 100)
+3. Repeat some large number of times (randomForest in R defaults to 500)
 *** Using the model                                                 :B_block:
     :PROPERTIES:
     :BEAMER_env: block
@@ -659,7 +715,37 @@ speciesPredictions = speciesPredictions[
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
+
+** Species Classifier: Random Forest: Training output
+#+BEGIN_src text
+Fitting: mtry=2
+Fitting: mtry=35
+Fitting: mtry=69
+#+END_src
+
+\alert{(the mtry parameter is the number of features selected for each tree)}
 ** Species Classifier: Random Forest: Results
+\scriptsize
+#+BEGIN_src text
+58155 samples
+   69 predictors
+
+Pre-processing:  
+Resampling: Bootstrap (25 reps) 
+
+Summary of sample sizes: 58155, 58155, 58155, 58155, 58155, 58155, ... 
+
+Resampling results across tuning parameters:
+
+  mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
+  2     0.725     0.123  0.0056       0.026   
+  35    0.837     0.615  0.00235      0.00588 
+  69    0.83      0.599  0.00252      0.00601 
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 35. 
+#+END_src
+** Species Classifier: Random Forest: Confusion Matrix
 \begin{center}
 \begin{minipage}{0.7\textwidth}
 #+BEGIN_src text
@@ -675,8 +761,9 @@ confusionMatrix(speciesPredictions$pred,
 No Information Rate : 0.6988        
 P-Value [Acc > NIR] : <2e-16        
     
-        Sensitivity : 0.8844        
-        Specificity : 0.7338        
+Final model: 
+Number of trees: 500
+No. of variables tried at each split: 35
 #+END_src
 \end{minipage}
 \end{center}
@@ -684,10 +771,10 @@ P-Value [Acc > NIR] : <2e-16
 ** Summary Comparison of the Models
 |---------------+---------------+-----------------+----------|
 | Algorithm     | Time To Train | Time to Predict | Accuracy |
-|               |     (min)     |      (sec)      |          |
+|               | (min)         |           (sec) |          |
 |---------------+---------------+-----------------+----------|
-| Naive Bayes   |               |          86.542 |   0.7786 |
-| ANN           |        115.08 |           3.221 |   0.8205 |
+| Naive Bayes   | 10+ hours     |          86.542 |   0.7786 |
+| ANN           | 115.08        |           3.221 |   0.8205 |
 | Random Forest |               |          18.539 |   0.8391 |
 |---------------+---------------+-----------------+----------|
 \footnotesize{Measurements were taken using R running on an Amazon EC2 Large instance 
