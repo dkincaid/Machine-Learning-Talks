@@ -1,31 +1,42 @@
 library(caret)
+# Load the csv file and pull out just the columns we are interested in
 species.full = read.table("../data/speciesprocessed.csv",header=T,sep=",")
 species.features = subset(species.full,select=c("name","sex","age","weight","visits","totsibs","actsibs"))
 
+# Create a data frame with counts of the names
 namefreq = as.data.frame(with(species.features, table(name)))
 head(namefreq[with(namefreq, order(-Freq)),],10)
 
+# Change all the names with less than 100 occurences into "Other"
 excludename = as.character(namefreq[namefreq$Freq < 100,"name"])
 badnames = as.integer(rownames(species.features[species.features$name %in% excludename,]))
 levels(species.features$name) = c(levels(species.features$name),"Other")
 species.features[badnames,]$name = "Other"
 species.features$name = species.features$name[drop=T]
 
+# Create the model matrices for the categorical features name and sex
 namemodelmatrix = model.matrix(~ name - 1, data=species.features)
 sexmodelmatrix = model.matrix(~ sex - 1, data=species.features)
 species.features = subset(species.features,select=c("age","weight","visits","totsibs","actsibs"))
 species.features = cbind(species.features, sexmodelmatrix)
 species.features = cbind(species.features, namemodelmatrix)
 
+# Create the list of target species
 species.targets = subset(species.full, select="species")
 species.targets = species.targets$species[drop=TRUE]
 
+# Partition the examples into 80% for training and 20% for testing
 set1index = createDataPartition(species.targets, p=.2, list=FALSE, times=1)
 species.targets.test = species.targets[set1index]
 species.features.test = species.features[set1index,]
 species.targets.train = species.targets[-set1index]
 species.features.train = species.features[-set1index,]
 
+# Running the models
+library(doMC)
+registerDoMC(cores=8)
+
+# Artificial Neural Network
 annmodel = train(species.features.train,species.targets.train,"nnet")
 
 speciesPredictions = extractPrediction(list(annmodel),testX=species.features.test,testY=species.targets.test)
@@ -35,12 +46,14 @@ speciesProbs = extractProb(list(annmodel),testX=species.features.test,testY=spec
 plotClassProbs(speciesProbs)
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
+# Naive Bayes
 nbmodel = train(species.features.train,species.targets.train,"nb")
 
 speciesPredictions = extractPrediction(list(nbmodel),testX=species.features.test,testY=species.targets.test)
 speciesPredictions = speciesPredictions[speciesPredictions$dataType == "Test",]
 confusionMatrix(speciesPredictions$pred, speciesPredictions$obs)
 
+# Random Forest
 rfmodel = train(species.features.train,species.targets.train,"rf")
 
 speciesPredictions = extractPrediction(list(rfmodel),testX=species.features.test,testY=species.targets.test)
