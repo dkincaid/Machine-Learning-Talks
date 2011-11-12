@@ -1,7 +1,7 @@
 #+TITLE:     Introduction to Machine Learning
 #+AUTHOR:    Dave Kincaid
 #+EMAIL:     kincaid.dave@gmail.com
-#+DATE:      4/8/2011
+#+DATE:      11/12/2011
 #+DESCRIPTION: A short introduction to machine learning with an application using R.
 #+KEYWORDS: ai, machinelearning, R, Rstats
 #+LANGUAGE:  en
@@ -103,13 +103,12 @@
 | Max    | Male   |   50 |      7 |      2 |    3 |       2 | Feline  |
 
 becomes:
-
 \scriptsize
-| Sex    |  Age | Weight | Visits | Sibs | ActSibs | Fluffy | Spot | Max | Species |
-|--------+------+--------+--------+------+---------+--------+------+-----+---------|
-| Female |  200 |     12 |      2 |    1 |       3 |  1     |  0   |  0  | Feline  |
-| Neuter | 1243 |     50 |      1 |    1 |       1 |  0     |  1   |  0  | Canine  |
-| Male   |   50 |      7 |      2 |    3 |       2 |  0     |  0   |  1  | Feline  |
+| F | M | N |  Age | Weight | Visits | Sibs | ActSibs | Fluffy | Spot | Max | Species |
+|---+---+---+------+--------+--------+------+---------+--------+------+-----+---------|
+| 1 | 0 | 0 |  200 |     12 |      2 |    1 |       3 |      1 |    0 |   0 | Feline  |
+| 0 | 0 | 1 | 1243 |     50 |      1 |    1 |       1 |      0 |    1 |   0 | Canine  |
+| 0 | 1 | 0 |   50 |      7 |      2 |    3 |       2 |      0 |    0 |   1 | Feline  |
 \normalsize
 ** Short List of Algorithms
 *** Supervised learning algorithms                            :BMCOL:B_block:
@@ -274,6 +273,15 @@ Total number of training examples: 72,696 with 69 features
 species.full = read.table
            ("../data/speciesprocesses.csv",
                         header=T, sep=",")
+namefreq = as.data.frame(with(species.features,
+                              table(name)))
+excludename = as.character(namefreq[namefreq$Freq < 100,"name"])
+badnames = as.integer(rownames(species.features[
+                       species.features$name %in% excludename,]))
+levels(species.features$name) = c(levels(species.features$name),"Other")
+species.features[badnames,]$name = "Other"
+species.features$name = species.features$name[drop=T]
+
 #+END_src
 ** Species Classifier: Reformat and split the data
 #+BEGIN_src R
@@ -328,12 +336,17 @@ species.features.train = species.features[-set1index]
 
 #+BEGIN_LaTeX
 \only<1>{The goal is to calculate the probabilities of each species given a weight and a sex.}
-\uncover<2->{Training the model consists of calulating all the terms on the right hand side:}
-\only<1-2>{\[ P(Canine|W=a, S=b) = \frac{P(W=a,S=b|Canine)P(Canine)}{P(W=a,S=b)} \] 
+\uncover<2->{Training the model consists of calculating all the terms on the right hand side:}
+\only<1>{\[ P(Canine|W=a, S=b) = \frac{P(W=a,S=b|Canine)P(Canine)}{P(W=a,S=b)} \] 
 \[ P(Feline|W=a, S=b) = \frac{P(W=a,S=b|Feline)P(Feline)}{P(W=a,S=b)} \]}
-\uncover<3->{\[ P(Canine) = \frac{2}{5} = 0.4 \quad P(Feline) = \frac{3}{5} = 0.6\]}
-\uncover<4->{\[ P(W=a,S=b|Canine)=P(W=a|Canine)P(S=b|Canine)\]}
-\uncover<5->{\[=\frac{1}{\sqrt{2\pi\sigma_{canine}^2}}e^{-(a-\mu_{canine})^2/(2\sigma_{canine}^2)}\left(\frac{1}{2}\right)\]}
+\only<2-3>{\[ P(Canine|W=a, S=b) = P(W=a,S=b|Canine)P(Canine) \] 
+\[ P(Feline|W=a, S=b) = P(W=a,S=b|Feline)P(Feline) \]}
+\only<3>{Simplifying assumption:
+\[ P(W=a, S=b|Canine) = P(W=a|Canine)P(S=b|Canine) \]
+\[ P(W=a, S=b|Feline) = P(W=a|Feline)P(S=b|Feline) \]}
+\uncover<4->{\[ \text{Priors: } P(Canine) = \frac{2}{5} = 0.4 \quad P(Feline) = \frac{3}{5} = 0.6\]}
+\uncover<5->{\[ \text{Likelihood: } P(S=female|Canine)=\frac{3}{5} = 0.6 \quad P(S=male|Canine)=\frac{2}{5} = 0.4\]}
+\uncover<6->{\[ P(W=a|Canine)=\frac{1}{\sqrt{2\pi\sigma_{canine}^2}}e^{-(a-\mu_{canine})^2/(2\sigma_{canine}^2)}\]}
 #+END_LaTeX
 ** Algorithms: Naive Bayes - Bayes Theorem
    :PROPERTIES:
@@ -347,6 +360,8 @@ species.features.train = species.features[-set1index]
 #+END_LaTeX
 Now that we know all the terms on the right hand side, given a weight and a sex
 we can calculate the probabilities on the left for each class (Canine and Feline) and compare.
+
+Suppose we want to classify an animal with weight 25 and sex male:
 \[ P(Canine|W=25,S=Male) = P(Canine)P(W=25,S=Male|Canine) \]
 \[ P(Feline|W=25,S=Male) = P(Feline)P(W=25,S=Male|Feline) \]
 ** Species Classifier: Naive Bayes: Train, Test, Measure
@@ -379,13 +394,6 @@ speciesPredictions = speciesPredictions[
 #+BEGIN_src R
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
-#+END_src
-** Species Classifier: Naive Bayes: Training output
-#+BEGIN_src text
-Fitting: usekernel=TRUE 
-Fitting: usekernel=FALSE 
-Error in NaiveBayes.default(X, Y, ...) : 
-  Zero variances for at least one class in variables: sexOther, sexUnknown
 #+END_src
 ** Species Classifier: Naive Bayes: Results
 \scriptsize
@@ -541,12 +549,6 @@ speciesPredictions = speciesPredictions[
 #+BEGIN_src R
 confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
-#+END_src
-** Species Classifier: ANN: Training output
-#+BEGIN_src text
-Fitting: 
-Fitting: 
-Fitting: 
 #+END_src
 ** Species Classifier: ANN: Results
 \scriptsize
@@ -716,14 +718,6 @@ confusionMatrix(speciesPredictions$pred,
                 speciesPredictions$obs)
 #+END_src
 
-** Species Classifier: Random Forest: Training output
-#+BEGIN_src text
-Fitting: mtry=2
-Fitting: mtry=35
-Fitting: mtry=69
-#+END_src
-
-\alert{(the mtry parameter is the number of features selected for each tree)}
 ** Species Classifier: Random Forest: Results
 \scriptsize
 #+BEGIN_src text
@@ -771,10 +765,10 @@ No. of variables tried at each split: 35
 ** Summary Comparison of the Models
 |---------------+---------------+-----------------+----------|
 | Algorithm     | Time To Train | Time to Predict | Accuracy |
-|               | (min)         |           (sec) |          |
+|               |               |           (sec) |          |
 |---------------+---------------+-----------------+----------|
-| Naive Bayes   | 10+ hours     |          86.542 |   0.7786 |
-| ANN           | 115.08        |           3.221 |   0.8205 |
+| Naive Bayes   | 5+ hours      |          86.542 |   0.7786 |
+| ANN           | 65 min        |           3.221 |   0.8205 |
 | Random Forest |               |          18.539 |   0.8391 |
 |---------------+---------------+-----------------+----------|
 \footnotesize{Measurements were taken using R running on an Amazon EC2 Large instance 

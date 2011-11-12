@@ -3,6 +3,8 @@ species.full = read.table("../data/speciesprocessed.csv",header=T,sep=",")
 species.features = subset(species.full,select=c("name","sex","age","weight","visits","totsibs","actsibs"))
 
 namefreq = as.data.frame(with(species.features, table(name)))
+head(namefreq[with(namefreq, order(-Freq)),],10)
+
 excludename = as.character(namefreq[namefreq$Freq < 100,"name"])
 badnames = as.integer(rownames(species.features[species.features$name %in% excludename,]))
 levels(species.features$name) = c(levels(species.features$name),"Other")
